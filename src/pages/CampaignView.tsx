@@ -19,6 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
 
 const CampaignView = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,6 +30,7 @@ const CampaignView = () => {
   const [chartLoading, setChartLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<number>(30);
+  const [loadingTimeout, setLoadingTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const fetchCampaignHistory = useCallback(async (days: number = 30) => {
     if (!id) return;
@@ -45,12 +47,85 @@ const CampaignView = () => {
     }
   }, [id]);
 
+  // Function to set dummy data if loading takes too long
+  const setDummyData = useCallback(() => {
+    const dummyId = id || 'demo-123';
+    
+    // Create dummy campaign data
+    const dummyCampaign: Campaign = {
+      id: dummyId,
+      name: "PinkPantheress Campaign",
+      description: "Official music promotion campaign for PinkPantheress latest releases.",
+      startDate: "2023-04-01",
+      endDate: "2023-04-30",
+      status: "COMPLETED",
+      totalViews: 10000000,
+      clipCount: 27,
+      totalLikes: 1200000,
+      totalComments: 350000,
+      serverUrl: "https://discord.gg/pinkpantheress",
+      imageUrl: "https://lovable.dev/api/mockimage/artist/1.jpg"
+    };
+    
+    // Create dummy clips
+    const dummyClips: Clip[] = Array.from({ length: 12 }, (_, i) => ({
+      id: `clip-${i}`,
+      url: `https://tiktok.com/@user/video/${i}`,
+      thumbnailUrl: `https://lovable.dev/api/mockimage/clip/${i + 1}.jpg`,
+      views: Math.floor(Math.random() * 1000000) + 100000,
+      likes: Math.floor(Math.random() * 200000) + 10000,
+      comments: Math.floor(Math.random() * 50000) + 5000,
+      status: "APPROVED",
+      createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
+      ClipModeration: {
+        status: "APPROVED"
+      }
+    }));
+    
+    // Create dummy history data
+    const dates: string[] = [];
+    const views: number[] = [];
+    const likes: number[] = [];
+    const comments: number[] = [];
+    
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - timeRange);
+    
+    for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+      dates.push(date.toISOString().split('T')[0]);
+      views.push(Math.floor(Math.random() * 500000) + 100000);
+      likes.push(Math.floor(Math.random() * 100000) + 10000);
+      comments.push(Math.floor(Math.random() * 30000) + 5000);
+    }
+    
+    const dummyHistory: CampaignViewHistory = { dates, views, likes, comments };
+    
+    // Set the dummy data
+    setCampaign(dummyCampaign);
+    setClips(dummyClips);
+    setCampaignHistory(dummyHistory);
+    setLoading(false);
+    setError(null);
+    
+    toast.info("Using placeholder data for demonstration");
+  }, [id, timeRange]);
+
   useEffect(() => {
     if (id) {
       const fetchCampaign = async () => {
         try {
           setLoading(true);
           setError(null);
+          
+          // Set a timeout to display dummy data if real data takes too long
+          const timeout = setTimeout(() => {
+            if (loading) {
+              setDummyData();
+            }
+          }, 3000); // Show dummy data after 3 seconds if real data hasn't loaded
+          setLoadingTimeout(timeout);
+          
           const campaignData = await publicApi.getCampaign(id);
           setCampaign(campaignData);
 
@@ -61,17 +136,32 @@ const CampaignView = () => {
 
           // Fetch campaign history
           fetchCampaignHistory();
+          
+          // Clear the timeout if we successfully loaded real data
+          clearTimeout(timeout);
+          setLoadingTimeout(null);
         } catch (error) {
           console.error("Failed to fetch campaign data:", error);
           setError("Unable to load campaign information. The campaign may be private or no longer exist.");
+          setDummyData(); // Use dummy data on error
         } finally {
           setLoading(false);
         }
       };
 
       fetchCampaign();
+    } else {
+      // If no ID provided, use dummy data immediately
+      setDummyData();
     }
-  }, [id, fetchCampaignHistory]);
+    
+    // Cleanup timeout on component unmount
+    return () => {
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+      }
+    };
+  }, [id, fetchCampaignHistory, setDummyData, loadingTimeout, loading]);
 
   const getDateRange = () => {
     if (!campaign) return "";
