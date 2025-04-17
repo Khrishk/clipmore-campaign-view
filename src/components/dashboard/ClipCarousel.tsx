@@ -2,7 +2,7 @@
 import React from "react";
 import { Clip, formatNumber } from "@/types/campaign";
 import { Button } from "@/components/ui/button";
-import { PlayIcon } from "lucide-react";
+import { PlayIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -10,6 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ClipCarouselProps {
   clips: Clip[];
@@ -42,70 +43,83 @@ const ClipCarousel: React.FC<ClipCarouselProps> = ({ clips, loading }) => {
 
   if (filteredClips.length === 0) {
     return (
-      <div className="flex h-64 w-full items-center justify-center rounded-lg border">
-        <p className="text-muted-foreground">
-          No approved clips available for this campaign.
-        </p>
-      </div>
+      <Card>
+        <CardContent className="flex h-64 w-full items-center justify-center">
+          <p className="text-muted-foreground">
+            No approved clips available for this campaign.
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="w-full rounded-md">
-      <div className="mx-auto max-w-5xl">
-        <div className="relative">
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-          >
-            <CarouselContent>
-              {filteredClips.map((clip) => (
-                <CarouselItem key={clip.id} className="basis-full md:basis-1/5 pl-4">
-                  <a
-                    href={clip.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group block overflow-hidden rounded-lg border bg-card shadow-sm transition-all hover:shadow-md"
-                  >
-                    <div className="aspect-[9/16] relative w-full overflow-hidden bg-gray-100">
-                      <img
-                        src={clip.thumbnailUrl}
-                        alt="Clip thumbnail"
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src =
-                            "https://placehold.co/600x400/gray/white?text=No+Thumbnail";
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-black/30 opacity-0 transition-opacity group-hover:opacity-100 flex items-center justify-center">
-                        <Button size="icon" variant="secondary" className="h-10 w-10 rounded-full">
-                          <PlayIcon className="h-5 w-5" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="p-3">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium">{formatNumber(clip.views)} views</span>
-                        <div className="flex items-center gap-3">
-                          <span>{formatNumber(clip.likes)} likes</span>
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl font-semibold">Top Performing Clips</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="w-full rounded-md">
+          <div className="mx-auto max-w-5xl">
+            <div className="relative">
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+              >
+                <CarouselContent>
+                  {filteredClips.map((clip) => (
+                    <CarouselItem key={clip.id} className="basis-full md:basis-1/5 pl-4">
+                      <a
+                        href={clip.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group block overflow-hidden rounded-lg border bg-card shadow-sm transition-all hover:shadow-md"
+                      >
+                        <div className="aspect-[9/16] relative w-full overflow-hidden bg-gray-100">
+                          <img
+                            src={clip.thumbnailUrl}
+                            alt="Clip thumbnail"
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src =
+                                "https://placehold.co/600x400/gray/white?text=No+Thumbnail";
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-black/30 opacity-0 transition-opacity group-hover:opacity-100 flex items-center justify-center">
+                            <Button size="icon" variant="secondary" className="h-10 w-10 rounded-full">
+                              <PlayIcon className="h-5 w-5" />
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </a>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className="mt-2">
-              <CarouselPrevious className="absolute -left-4 top-1/2" />
-              <CarouselNext className="absolute -right-4 top-1/2" />
+                        <div className="p-3">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium">{formatNumber(clip.views)} views</span>
+                            <div className="flex items-center gap-3">
+                              <span>{formatNumber(clip.likes)} likes</span>
+                            </div>
+                          </div>
+                        </div>
+                      </a>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <div className="mt-4">
+                  <CarouselPrevious className="absolute -left-4 top-1/2 h-10 w-10">
+                    <ChevronLeft className="h-6 w-6" />
+                  </CarouselPrevious>
+                  <CarouselNext className="absolute -right-4 top-1/2 h-10 w-10">
+                    <ChevronRight className="h-6 w-6" />
+                  </CarouselNext>
+                </div>
+              </Carousel>
             </div>
-          </Carousel>
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

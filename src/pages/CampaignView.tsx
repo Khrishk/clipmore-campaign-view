@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Campaign, Clip, CampaignViewHistory, publicApi, formatNumber } from "@/types/campaign";
@@ -51,7 +50,7 @@ const CampaignView = () => {
   const setDummyData = useCallback(() => {
     const dummyId = id || 'demo-123';
     
-    // Create dummy campaign data
+    // Create dummy campaign data with Pink Pantheress image
     const dummyCampaign: Campaign = {
       id: dummyId,
       name: "PinkPantheress Campaign",
@@ -67,11 +66,11 @@ const CampaignView = () => {
       imageUrl: "https://lovable.dev/api/mockimage/artist/1.jpg"
     };
     
-    // Create dummy clips
+    // Create dummy clips with actual thumbnail images
     const dummyClips: Clip[] = Array.from({ length: 12 }, (_, i) => ({
       id: `clip-${i}`,
       url: `https://tiktok.com/@user/video/${i}`,
-      thumbnailUrl: `https://lovable.dev/api/mockimage/clip/${i + 1}.jpg`,
+      thumbnailUrl: `https://lovable.dev/api/mockimage/clip/${(i % 5) + 1}.jpg`,
       views: Math.floor(Math.random() * 1000000) + 100000,
       likes: Math.floor(Math.random() * 200000) + 10000,
       comments: Math.floor(Math.random() * 50000) + 5000,
@@ -249,7 +248,7 @@ const CampaignView = () => {
         <div className="container mx-auto py-8 px-4 max-w-7xl">
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             {/* Campaign Image */}
-            {campaign.imageUrl ? (
+            {campaign?.imageUrl ? (
               <div className="w-24 h-24 md:w-32 md:h-32 rounded-lg overflow-hidden flex-shrink-0 border-4 border-white/20 shadow-xl">
                 <img 
                   src={campaign.imageUrl} 
@@ -267,10 +266,10 @@ const CampaignView = () => {
             <div className="flex-1">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold mb-1">{campaign.name}</h1>
+                  <h1 className="text-3xl md:text-4xl font-bold mb-1">{campaign?.name}</h1>
                   <div className="flex items-center gap-3 mb-3">
                     <Badge className="bg-white/20 hover:bg-white/30 text-white">
-                      {campaign.status.toLowerCase().charAt(0).toUpperCase() + campaign.status.toLowerCase().slice(1)}
+                      {campaign?.status.toLowerCase().charAt(0).toUpperCase() + campaign?.status.toLowerCase().slice(1)}
                     </Badge>
                     <div className="flex items-center text-white/80 text-sm">
                       <Calendar className="w-3.5 h-3.5 mr-1.5" />
@@ -279,7 +278,7 @@ const CampaignView = () => {
                   </div>
                 </div>
                 
-                {campaign.serverUrl && (
+                {campaign?.serverUrl && (
                   <Button 
                     size="sm"
                     variant="secondary"
@@ -293,7 +292,7 @@ const CampaignView = () => {
                 )}
               </div>
               
-              {campaign.description && (
+              {campaign?.description && (
                 <p className="text-white/80 mt-2 max-w-3xl">{campaign.description}</p>
               )}
             </div>
@@ -309,7 +308,7 @@ const CampaignView = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Views</p>
-                  <h3 className="text-2xl md:text-3xl font-bold mt-1">{formatNumber(campaign.totalViews)}</h3>
+                  <h3 className="text-2xl md:text-3xl font-bold mt-1">{formatNumber(campaign?.totalViews || 0)}</h3>
                 </div>
                 <div className="p-2 bg-purple-100 rounded-full">
                   <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -326,7 +325,7 @@ const CampaignView = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Likes</p>
-                  <h3 className="text-2xl md:text-3xl font-bold mt-1">{formatNumber(campaign.totalLikes)}</h3>
+                  <h3 className="text-2xl md:text-3xl font-bold mt-1">{formatNumber(campaign?.totalLikes || 0)}</h3>
                 </div>
                 <div className="p-2 bg-pink-100 rounded-full">
                   <svg className="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -342,7 +341,7 @@ const CampaignView = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Comments</p>
-                  <h3 className="text-2xl md:text-3xl font-bold mt-1">{formatNumber(campaign.totalComments)}</h3>
+                  <h3 className="text-2xl md:text-3xl font-bold mt-1">{formatNumber(campaign?.totalComments || 0)}</h3>
                 </div>
                 <div className="p-2 bg-blue-100 rounded-full">
                   <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -358,7 +357,7 @@ const CampaignView = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Clips</p>
-                  <h3 className="text-2xl md:text-3xl font-bold mt-1">{campaign.clipCount}</h3>
+                  <h3 className="text-2xl md:text-3xl font-bold mt-1">{campaign?.clipCount || 0}</h3>
                 </div>
                 <div className="p-2 bg-emerald-100 rounded-full">
                   <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -402,10 +401,6 @@ const CampaignView = () => {
 
         {/* Top Performing Clips Section */}
         <div className="mb-10">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-2xl font-bold">Top Performing Clips</h2>
-          </div>
-          
           <ClipCarousel clips={clips} loading={loading} />
         </div>
       </div>

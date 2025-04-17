@@ -91,53 +91,44 @@ const MetricChart: React.FC<MetricChartProps> = ({
       </CardHeader>
       <CardContent>
         <div className="h-[220px]">
-          <ChartContainer
-            config={{
-              metric: {
-                color: color,
-              },
-            }}
-            className="h-full"
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={data}
-                margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="date" 
-                  tickMargin={10}
-                  tickFormatter={(value) => {
-                    const date = new Date(value);
-                    return `${date.getDate()}/${date.getMonth() + 1}`;
-                  }}
-                  tick={{ fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis 
-                  tickFormatter={(value) => formatNumber(value)}
-                  tick={{ fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                  width={40}
-                  domain={['auto', 'auto']}
-                  padding={{ top: 10, bottom: 0 }}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke={color}
-                  strokeWidth={2.5}
-                  dot={{ r: 0 }}
-                  activeDot={{ r: 5, fill: color, stroke: "#fff", strokeWidth: 2 }}
-                  isAnimationActive={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={data}
+              margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+              <XAxis 
+                dataKey="date" 
+                tickMargin={10}
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  return `${date.getDate()}/${date.getMonth() + 1}`;
+                }}
+                tick={{ fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis 
+                tickFormatter={(value) => formatNumber(value)}
+                tick={{ fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                width={40}
+                domain={['auto', 'auto']}
+                padding={{ top: 10, bottom: 0 }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke={color}
+                strokeWidth={2.5}
+                dot={{ r: 0 }}
+                activeDot={{ r: 5, fill: color, stroke: "#fff", strokeWidth: 2 }}
+                isAnimationActive={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </CardContent>
     </Card>
